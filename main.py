@@ -7,11 +7,6 @@ import os
 import paramiko
 from telebot import apihelper
 
-apihelper.proxy = {
-  'http', 'socks5://login:pass@12.11.22.33:8000',
-  'https', 'socks5://login:pass@12.11.22.33:8000'
-}
-
 #### параметры ssh
 host = config.host
 user = config.user
