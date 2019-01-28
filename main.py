@@ -5,7 +5,6 @@ import json
 import utils
 import os
 import paramiko
-from telebot import apihelper
 
 #### параметры ssh
 host = config.host
