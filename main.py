@@ -104,6 +104,7 @@ def exit_usr(message):
         authorized_user.remove(message.chat.id)
         with open (auth_file, 'w') as j:
             json.dump(authorized_user, j)
+        bot.send_message(message.chat.id, 'иди нахуй, Марина')
 
 @bot.message_handler(commands=['c'])
 def command_consol(message):
