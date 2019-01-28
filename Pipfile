@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+beautifulsoup4 = "==4.5.1"
+bs4 = "==0.0.1"
+requests = "==2.11.1"
+paramiko = "==2.4.2"
+pyTelegramBotAPI = "==2.1.7"
+cherrypy = "*"
+httplib2 = "*"
+
+[requires]
+python_version = "3.7"
