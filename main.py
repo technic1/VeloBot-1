@@ -121,7 +121,7 @@ def connection(message):
         global channel
         channel = client.invoke_shell()
 
-        channel.send('ssh pi@192.168.78.{}'.format(message.text[6:]))
+        channel.send('ssh pi@192.168.78.{}'.format(message.text[6:])+'\n')
         time.sleep(2)
 
         channel.send(local_password + '\n')
