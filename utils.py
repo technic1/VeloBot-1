@@ -14,7 +14,7 @@ def connect_vpn(): #### подключение к серверу по ssh
     channel.settimeout(5)
 
 def local_connect(message): #### локальное подключение к станции
-    channel.exec_command('ssh pi@192.168.78.{}'.format(message.text[1:-1]))
+    channel.exec_command('ssh pi@192.168.78.{}'.format(message.text[6:]))
     channel.send(config.local_password+'\n')
     return channel.recv(1024)
 
