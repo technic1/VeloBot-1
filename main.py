@@ -104,7 +104,7 @@ def close_connection():
 @bot.message_handler(commands=['c'])
 def command_consol(message):
     if message.chat.id in authorized_user:
-        channel.exec_command(message.text[3:])
+        client.exec_command(message.text[3:])
         data = channel.recv(1024)
         bot.send_message(message.chat.id, data)
     else:
@@ -124,7 +124,6 @@ def connection(message):
         channel.settimeout(5)
         channel.exec_command('ssh pi@192.168.78.{}'.format(message.text[6:]))
         channel.send(local_password + '\n')
-        return channel.recv(1024)
     else:
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
         bot.register_next_step_handler(error, welcome_msg)
