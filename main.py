@@ -117,6 +117,6 @@ def connection(message):
     if message.chat.id in authorized_user:
         utils.connect_vpn()
         utils.local_connect(message)
-
+        bot.send_message(message.chat.id, 'HUY')
 if __name__ == '__main__':
     bot.polling(none_stop=True)
