@@ -78,12 +78,7 @@ def check_confirm(message):
 
 @bot.message_handler(commands=['check'])
 def test_command(message):
-    if os.stat(auth_file).st_size != 0:
-        with open (auth_file, 'r') as j:
-            k_pop = json.load(j)
-        bot.send_message(message.chat.id, str(k_pop)+str(authorized_user))
-    else:
-        bot.send_message(message.chat.id, 'List is empty')
+    bot.send_message(message.chat.id, message.text)
 
 @bot.message_handler(commands=['connect'])
 def connect(message):
@@ -100,18 +95,35 @@ def exit_usr(message):
             json.dump(authorized_user, j)
         bot.send_message(message.chat.id, 'иди нахуй, Марина')
 
+@bot.message_handler(commands=['close'])
+def close_connection():
+    channel.close()
+    client.close()
+
 @bot.message_handler(commands=['c'])
 def command_consol(message):
     if message.chat.id in authorized_user:
-        client = paramiko.SSHClient()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(hostname=local_host, username=local_user, password=local_password, port=port)
-        channel = client.get_transport().open_session()
-        channel.get_pty()
-        channel.settimeout(5)
         channel.exec_command(message.text[3:])
         data = channel.recv(1024)
         bot.send_message(message.chat.id, data)
+    else:
+        error = bot.send_message(message.chat.id, 'Вы не авторизованы')
+        bot.register_next_step_handler(error, welcome_msg)
+
+@bot.message_handler(commands=['con'])
+def connection(message):
+    if message.chat.id in authorized_user:
+        global client
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        client.connect(hostname=config.host, username=config.user, password=config.secret, port=config.port)
+        global channel
+        channel = client.invoke_shell()
+
+        channel.send('ssh pi@192.168.78.{}'.format(message.text[6:]))
+        time.sleep(2)
+        channel.send(local_password + '\n')
+        return channel.recv(1024)
     else:
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
         bot.register_next_step_handler(error, welcome_msg)

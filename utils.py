@@ -1,24 +1,22 @@
 import random
 import string
 import paramiko
+import config
 
 def connect_vpn(): #### подключение к серверу по ssh
+    global client
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(hostname=host, username=user, password=secret, port=port)
-    stdin, stdout, stderr = client.exec_command('ls')
-    data = stdout.read() + stderr.read()
-    print(data[:10])
-    client.close()
-    return data
+    client.connect(hostname=config.host, username=config.user, password=config.secret, port=config.port)
+    global channel
+    channel = client.get_transport().open_session()
+    channel.get_pty()
+    channel.settimeout(5)
 
-def local_connect(): #### локальное подключение к станции
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(hostname=local_host, username=local_user, password=local_password, port=port)
-    stdin, stdout, stderr = client.exec_command('ls -l')
-    data = stdout.read() + stderr.read()
-    return data
+def local_connect(message): #### локальное подключение к станции
+    channel.exec_command('ssh pi@192.168.78.{}'.format(message.text[6:]))
+    channel.send(config.local_password+'\n')
+    return channel.recv(1024)
 
 def command_local(exe): #### функция выполнения присланной команды (не работает)
     stdin, stdout, stderr = channel.exec_command(exe)
