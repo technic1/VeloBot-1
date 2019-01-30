@@ -104,7 +104,7 @@ def close_connection():
 @bot.message_handler(commands=['c'])
 def command_consol(message):
     if message.chat.id in authorized_user:
-        channel.exec_command(message.text[3:])
+        channel.send(message.text[3:])
         data = channel.recv(1024)
         bot.send_message(message.chat.id, data)
     else:
