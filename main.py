@@ -5,6 +5,7 @@ import json
 import utils
 import os
 import paramiko
+import time
 
 #### параметры ssh
 host = config.host
@@ -122,7 +123,7 @@ def connection(message):
 
         channel.send('ssh pi@192.168.78.{}'.format(message.text[6:]))
         time.sleep(2)
-        
+
         channel.send(local_password + '\n')
         return channel.recv(1024)
     else:
