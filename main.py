@@ -79,12 +79,7 @@ def check_confirm(message):
 
 @bot.message_handler(commands=['check'])
 def test_command(message):
-    if os.stat(auth_file).st_size != 0:
-        with open (auth_file, 'r') as j:
-            k_pop = json.load(j)
-        bot.send_message(message.chat.id, str(k_pop)+str(authorized_user))
-    else:
-        bot.send_message(message.chat.id, 'List is empty')
+    bot.send_message(message.chat.id, message.text)
 
 @bot.message_handler(commands=['connect'])
 def connect(message):
@@ -116,6 +111,12 @@ def command_consol(message):
     else:
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
         bot.register_next_step_handler(error, welcome_msg)
+
+@bot.message_handler(commands=['con'])
+def connection(message):
+    if message.chat.id in authorized_user:
+        utils.connect_vpn()
+        utils.local_connect(message)
 
 if __name__ == '__main__':
     bot.polling(none_stop=True)

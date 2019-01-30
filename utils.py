@@ -11,13 +11,10 @@ def connect_vpn(): #### подключение к серверу по ssh
     channel.get_pty()
     channel.settimeout(5)
 
-def local_connect(): #### локальное подключение к станции
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(hostname=local_host, username=local_user, password=local_password, port=port)
-    stdin, stdout, stderr = client.exec_command('ls -l')
-    data = stdout.read() + stderr.read()
-    return data
+def local_connect(message): #### локальное подключение к станции
+    channel.exec_command('ssh pi@192.168.78.{}'.format(message.text[1:-1]))
+    channel.send(config.local_password+'\n')
+    return channel.recv(1024)
 
 def command_local(exe): #### функция выполнения присланной команды (не работает)
     stdin, stdout, stderr = channel.exec_command(exe)
