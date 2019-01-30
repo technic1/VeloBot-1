@@ -4,10 +4,12 @@ import paramiko
 import config
 
 def connect_vpn(): #### подключение к серверу по ssh
-    global client = paramiko.SSHClient()
+    global client
+    client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     client.connect(hostname=config.host, username=config.user, password=config.secret, port=config.port)
-    global channel = client.get_transport().open_session()
+    global channel
+    channel = client.get_transport().open_session()
     channel.get_pty()
     channel.settimeout(5)
 
