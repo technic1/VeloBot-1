@@ -119,10 +119,10 @@ def connection(message):
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(hostname=config.host, username=config.user, password=config.secret, port=config.port)
         global channel
-        channel = client.get_transport().open_session()
-        channel.get_pty()
-        channel.settimeout(5)
-        channel.exec_command('ssh pi@192.168.78.{}'.format(message.text[6:]))
+        channel = client.invoke_shell()
+
+        channel.send('ssh pi@192.168.78.{}'.format(message.text[6:]))
+        time.sleep(2)
         channel.send(local_password + '\n')
         return channel.recv(1024)
     else:
