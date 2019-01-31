@@ -122,7 +122,8 @@ def connection(message):
         channel = client.get_transport().open_session()
         channel.get_pty()
         channel.settimeout(5)
-        channel.exec_command('ssh pi@192.168.78.{}'.format(message.text[6:]))
+        channel.invoke_shell
+        channel.exec_command('ssh pi@192.168.78.{}'.format(message.text[5:]))
         channel.send(local_password + '\n')
     else:
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
