@@ -104,7 +104,7 @@ def close_connection():
 @bot.message_handler(commands=['c'])
 def command_consol(message):
     if message.chat.id in authorized_user:
-        channel.send(message.text[3:])
+        channel.send(message.text[3:]+'\n')
         data = channel.recv(1024)
         bot.send_message(message.chat.id, data)
     else:
@@ -120,10 +120,8 @@ def connection(message):
         client.connect(hostname=config.host, username=config.user, password=config.secret, port=config.port)
         global channel
         channel = client.invoke_shell()
-
         channel.send('ssh pi@192.168.78.{}'.format(message.text[5:])+'\n')
         time.sleep(2)
-
         channel.send(local_password + '\n')
         return channel.recv(1024)
     else:
