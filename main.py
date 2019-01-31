@@ -5,7 +5,7 @@ import json
 import utils
 import os
 import paramiko
-from telebot import apihelper
+import time
 
 #### параметры ssh
 host = config.host
@@ -104,7 +104,7 @@ def close_connection():
 @bot.message_handler(commands=['c'])
 def command_consol(message):
     if message.chat.id in authorized_user:
-        client.exec_command(message.text[3:])
+        channel.send(message.text[3:])
         data = channel.recv(1024)
         bot.send_message(message.chat.id, data)
     else:
@@ -123,7 +123,9 @@ def connection(message):
         channel.get_pty()
         channel.settimeout(5)
         channel.invoke_shell
-        channel.exec_command('ssh pi@192.168.78.{}'.format(message.text[5:]))
+        channel = client.invoke_shell()
+        channel.send('ssh pi@192.168.78.{}'.format(message.text[5:])+'\n')
+        time.sleep(2)s
         channel.send(local_password + '\n')
     else:
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
