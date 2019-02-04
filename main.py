@@ -104,10 +104,12 @@ def close_connection():
 @bot.message_handler(commands=['c'])
 def command_consol(message):
     if message.chat.id in authorized_user:
-        channel.send(message.text[3:]+'\r\n')
+        # channel.send(message.text[3:]+'\r\n')
+
+        stdin, stdout, stderr = client.exec_command(command)
         while not channel.recv_ready():
             time.sleep(1)
-        data = channel.recv(1024)
+        data = stdout.read() + stderr.read()
         bot.send_message(message.chat.id, data)
     else:
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
