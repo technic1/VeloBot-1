@@ -123,10 +123,14 @@ def connection(message):
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(hostname=config.host, username=config.user, password=config.secret, port=config.port)
         global channel
-        channel = client.invoke_shell()
+        channel = client.get_transport().open_session()
+        channel.get_pty()
+        channel.settimiout(5)
         channel.exec_command('ssh pi@192.168.78.{}'.format(message.text[5:])+'\n')
         time.sleep(2)
         channel.send(local_password + '\n')
+        data = channel.recv(1024)
+        bot.send_message(message.chat.id, data)
         # return channel.recv(1024)
     else:
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
