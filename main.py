@@ -127,7 +127,6 @@ def connection(message):
         channel.get_pty()
         channel.settimeout(5)
         channel.exec_command('ssh pi@192.168.78.{}'.format(message.text[5:])+'\n')
-        time.sleep(2)
         channel.send(local_password + '\n')
         data = channel.recv(1024)
         bot.send_message(message.chat.id, data)
