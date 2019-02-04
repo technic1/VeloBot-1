@@ -125,7 +125,7 @@ def connection(message):
         global channel
         channel = client.get_transport().open_session()
         channel.get_pty()
-        channel.settimiout(5)
+        channel.settimeout(5)
         channel.exec_command('ssh pi@192.168.78.{}'.format(message.text[5:])+'\n')
         time.sleep(2)
         channel.send(local_password + '\n')
