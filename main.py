@@ -106,7 +106,7 @@ def command_consol(message):
     if message.chat.id in authorized_user:
         # channel.send(message.text[3:]+'\r\n')
 
-        stdin, stdout, stderr = client.exec_command(command)
+        stdin, stdout, stderr = client.exec_command(message.text[3:]+'\n')
         while not channel.recv_ready():
             time.sleep(1)
         data = stdout.read() + stderr.read()
