@@ -104,11 +104,11 @@ def close_connection():
 @bot.message_handler(commands=['c'])
 def command_consol(message):
     if message.chat.id in authorized_user:
-        # channel.send(message.text[3:]+'\r\n')
+ca        # channel.send(message.text[3:]+'\r\n')
         channel.send(message.text[3:]+'\n')
         data = ''
         while not data.endswith('some-prompt$ '):
-            resp = chan.recv(9999)
+            resp = chanel.recv(9999)
             data += resp
         bot.send_message(message.chat.id, data)
     else:
@@ -130,11 +130,11 @@ def connection(message):
         channel.send('ssh pi@192.168.78.{}'.format(message.text[5:])+'\n')
         data = ''
         while not data.endswith('\'s password: '):
-            resp = chan.recv(9999)
+            resp = chanel.recv(9999)
             data += resp
         channel.send(local_password + '\n')
         while not data.endswith('some-prompt$ '):
-            resp = chan.recv(9999)
+            resp = chanel.recv(9999)
             data += resp
         bot.send_message(message.chat.id, data)
         # return channel.recv(1024)
