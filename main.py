@@ -105,11 +105,11 @@ def close_connection():
 def command_consol(message):
     if message.chat.id in authorized_user:
         # channel.send(message.text[3:]+'\r\n')
-
-        stdin, stdout, stderr = channel.exec_command(message.text[3:]+'\n')
-        while not channel.recv_ready():
-            time.sleep(1)
-        data = stdout.read() + stderr.read()
+        channel.send(message.text[3:]+'\n')
+        data = ''
+        while not data.endswith('some-prompt$ '):
+            resp = chan.recv(9999)
+            data += resp
         bot.send_message(message.chat.id, data)
     else:
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
@@ -128,9 +128,14 @@ def connection(message):
         # channel.settimeout(5)
         channel = client.invoke_shell()
         channel.send('ssh pi@192.168.78.{}'.format(message.text[5:])+'\n')
-        time.sleep(2)
+        data = ''
+        while not data.endswith('\'s password: '):
+            resp = chan.recv(9999)
+            data += resp
         channel.send(local_password + '\n')
-        data = channel.recv(1024)
+        while not data.endswith('some-prompt$ '):
+            resp = chan.recv(9999)
+            data += resp
         bot.send_message(message.chat.id, data)
         # return channel.recv(1024)
     else:
