@@ -104,7 +104,7 @@ def close_connection():
 @bot.message_handler(commands=['c'])
 def command_consol(message):
     if message.chat.id in authorized_user:
-ca        # channel.send(message.text[3:]+'\r\n')
+        # channel.send(message.text[3:]+'\r\n')
         channel.send(message.text[3:]+'\n')
         data = ''
         while not data.endswith('some-prompt$ '):
