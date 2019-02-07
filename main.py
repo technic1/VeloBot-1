@@ -134,9 +134,6 @@ def connection(message):
             resp = channel.recv(9999)
             data += str(resp)
         channel.send(local_password + '\n')
-        while not data.endswith('$ '):
-            resp = channel.recv(9999)
-            data += str(resp)
         bot.send_message(message.chat.id, data)
         # return channel.recv(1024)
     else:
