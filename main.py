@@ -133,11 +133,12 @@ def connection(message):
             resp = channel.recv(9999)
             data += str(resp)
         channel.send(user + '\n')
+        bot.send_message(message.chat.id, data)
         while not data.endswith('\'s password: '):
             resp = channel.recv(9999)
             data += str(resp)
         channel.send('yes\n')
-        while not data.endswith('some-prompt$ '):
+        while not data.endswith('no): '):
             resp = channel.recv(9999)
             data += str(resp)
         channel.send(local_password + '\n')
