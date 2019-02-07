@@ -131,7 +131,7 @@ def connection(message):
         data = ''
         while not data.endswith('\'s password: '):
             resp = channel.recv(9999)
-            data += resp
+            data += str(resp)
         channel.send(local_password + '\n')
         bot.send_message(message.chat.id, data)
         # return channel.recv(1024)
