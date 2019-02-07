@@ -132,6 +132,10 @@ def connection(message):
         while not data.endswith('\'s password: '):
             resp = channel.recv(9999)
             data += str(resp)
+        channel.send('yes\n')
+        while not data.endswith('some-prompt$ '):
+            resp = channel.recv(9999)
+            data += str(resp)
         channel.send(local_password + '\n')
         while not data.endswith('some-prompt$ '):
             resp = channel.recv(9999)
