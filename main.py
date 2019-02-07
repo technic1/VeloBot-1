@@ -109,7 +109,7 @@ def command_consol(message):
         data = ''
         while not data.endswith('some-prompt$ '):
             resp = channel.recv(9999)
-            data += resp
+            data += str(resp)
         bot.send_message(message.chat.id, data)
     else:
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
@@ -131,11 +131,11 @@ def connection(message):
         data = ''
         while not data.endswith('\'s password: '):
             resp = channel.recv(9999)
-            data += resp
+            data += str(resp)
         channel.send(local_password + '\n')
         while not data.endswith('some-prompt$ '):
             resp = channel.recv(9999)
-            data += resp
+            data += str(resp)
         bot.send_message(message.chat.id, data)
         # return channel.recv(1024)
     else:
