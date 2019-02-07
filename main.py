@@ -130,7 +130,6 @@ def connection(message):
         channel.send('ssh pi@192.168.78.{}'.format(message.text[5:])+'\n')
         data = ''
         channel.send(user + '\n')
-        bot.send_message(message.chat.id, data)
         while not data.endswith('\'s password: '):
             resp = channel.recv(9999)
             data += str(resp)
