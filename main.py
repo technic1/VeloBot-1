@@ -129,20 +129,13 @@ def connection(message):
         channel = client.invoke_shell()
         channel.send('ssh pi@192.168.78.{}'.format(message.text[5:])+'\n')
         data = ''
-        while not data.endswith('login as: '):
-            resp = channel.recv(9999)
-            data += str(resp)
         channel.send(user + '\n')
         bot.send_message(message.chat.id, data)
         while not data.endswith('\'s password: '):
             resp = channel.recv(9999)
             data += str(resp)
-        channel.send('yes\n')
-        while not data.endswith('no): '):
-            resp = channel.recv(9999)
-            data += str(resp)
         channel.send(local_password + '\n')
-        while not data.endswith('some-prompt$ '):
+        while not data.endswith('$ '):
             resp = channel.recv(9999)
             data += str(resp)
         bot.send_message(message.chat.id, data)
