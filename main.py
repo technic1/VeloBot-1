@@ -107,7 +107,7 @@ def command_consol(message):
         # channel.send(message.text[3:]+'\r\n')
         channel.send(message.text[3:]+'\n')
         data = ''
-        while not data.endswith('some-prompt$ '):
+        while not data.endswith('$ '):
             resp = channel.recv(9999)
             data += str(resp)
         bot.send_message(message.chat.id, data)
@@ -129,7 +129,6 @@ def connection(message):
         channel = client.invoke_shell()
         channel.send('ssh pi@192.168.78.{}'.format(message.text[5:])+'\n')
         data = ''
-        channel.send(user + '\n')
         while not data.endswith('\'s password: '):
             resp = channel.recv(9999)
             data += str(resp)
