@@ -112,7 +112,10 @@ def command_consol(message):
             data += resp.decode()
         data = data[data.find(message.text[3:]) + len(message.text[3:]):data.find("root")]
         # data = channel.recv(9999)
-        bot.send_message(message.chat.id, data)
+        try:
+            bot.send_message(message.chat.id, data)
+        except:
+            bot.send_message(message.chat.id, 'empty...')
     else:
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
         bot.register_next_step_handler(error, welcome_msg)
