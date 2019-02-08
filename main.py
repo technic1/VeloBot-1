@@ -107,7 +107,7 @@ def command_consol(message):
         # channel.send(message.text[3:]+'\r\n')
         data = ''
         channel.send(message.text[3:]+'\n')
-        while not data.endswith('pi# '):
+        while not data.endswith('# '):
             resp = channel.recv(9999)
             data += resp.decode()
         data = data[data.find(message.text[3:]) + len(message.text[3:]):data.find("root")]
