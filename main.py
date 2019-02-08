@@ -128,14 +128,14 @@ def connection(message):
         data = ''
         while not data.endswith('\'s password: '):
             resp = channel.recv(9999)
-            data += str(resp)
+            data += resp.decode()
         time.sleep(3)
         channel.send(local_password + '\n')
         bot.send_message(message.chat.id, data)
         data = ''
         while not data.endswith(':~ $ '):
             resp = channel.recv(9999)
-            data += str(resp)
+            data += resp.decode()
         time.sleep(3)
         channel.send('sudo -s\n')
         time.sleep(1)
