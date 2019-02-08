@@ -110,7 +110,7 @@ def command_consol(message):
         while not data.endswith('pi# '):
             resp = channel.recv(9999)
             data += resp.decode()
-        data = data[data.find(message.text[3:]) - 1:data.find("root")]
+        data = data[data.find(message.text[3:]) + len(message.text[3:]):data.find("root")]
         # data = channel.recv(9999)
         bot.send_message(message.chat.id, data)
     else:
@@ -120,6 +120,7 @@ def command_consol(message):
 @bot.message_handler(commands=['con'])
 def connection(message):
     if message.chat.id in authorized_user:
+        bot.send_message(message.chat.id, 'Please wait about 20 seconds')
         global client
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
