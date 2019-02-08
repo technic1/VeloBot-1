@@ -107,7 +107,10 @@ def command_consol(message):
         # channel.send(message.text[3:]+'\r\n')
         data = ''
         channel.send(message.text[3:]+'\n')
-        data = channel.recv(9999)
+        while not data.endswith('root'):
+            resp = channel.recv(9999)
+            data += resp.decode()
+        # data = channel.recv(9999)
         bot.send_message(message.chat.id, data)
     else:
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
