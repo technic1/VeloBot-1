@@ -110,7 +110,7 @@ def command_consol(message):
         while not data.endswith('pi# '):
             resp = channel.recv(9999)
             data += resp.decode()
-        data = data[:data.find("root")]
+        data = data[data.find(message.text[3:]) - 1:data.find("root")]
         # data = channel.recv(9999)
         bot.send_message(message.chat.id, data)
     else:
@@ -136,12 +136,12 @@ def connection(message):
             data += resp.decode()
         time.sleep(3)
         channel.send(local_password + '\n')
-        bot.send_message(message.chat.id, data)
+        # bot.send_message(message.chat.id, data)
         while not data.endswith(':~$ '):
             resp = channel.recv(9999)
             data += resp.decode()
         time.sleep(3)
-        bot.send_message(message.chat.id, 'Ok')
+        # bot.send_message(message.chat.id, 'Ok')
         channel.send('sudo -s\n')
         while not data.endswith('pi# '):
             resp = channel.recv(9999)
