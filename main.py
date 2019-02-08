@@ -106,10 +106,7 @@ def command_consol(message):
     if message.chat.id in authorized_user:
         # channel.send(message.text[3:]+'\r\n')
         channel.send(message.text[3:]+'\n')
-        data = ''
-        while not data.endswith('$ '):
-            resp = channel.recv(9999)
-            data += str(resp)
+            data = channel.recv(9999)
         bot.send_message(message.chat.id, data)
     else:
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
@@ -132,8 +129,17 @@ def connection(message):
         while not data.endswith('\'s password: '):
             resp = channel.recv(9999)
             data += str(resp)
+        time.sleep(3)
         channel.send(local_password + '\n')
         bot.send_message(message.chat.id, data)
+        data = ''
+        while not data.endswith(':~ $ '):
+            resp = channel.recv(9999)
+            data += str(resp)
+        time.sleep(3)
+        channel.send('sudo -s\n')
+        time.sleep(1)
+        bot.send_message(message.chat.id, 'Ok')
         # return channel.recv(1024)
     else:
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
