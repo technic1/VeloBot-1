@@ -131,8 +131,8 @@ def connection(message):
             data += resp.decode()
         time.sleep(3)
         channel.send(local_password + '\n')
-        bot.send_message(message.chat.id, 'Ok')
-        while not data.endswith(':~ $ '):
+        bot.send_message(message.chat.id, data)
+        while not data.endswith(':~$ '):
             resp = channel.recv(9999)
             data += resp.decode()
         time.sleep(3)
