@@ -105,6 +105,7 @@ def close_connection():
 def command_consol(message):
     if message.chat.id in authorized_user:
         # channel.send(message.text[3:]+'\r\n')
+        data = ''
         channel.send(message.text[3:]+'\n')
         data = channel.recv(9999)
         bot.send_message(message.chat.id, data)
@@ -139,7 +140,7 @@ def connection(message):
         bot.send_message(message.chat.id, 'Ok')
         channel.send('sudo -s\n')
         time.sleep(1)
-        bot.send_message(message.chat.id, 'Ok')
+        bot.send_message(message.chat.id, data)
         # return channel.recv(1024)
     else:
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
