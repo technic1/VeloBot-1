@@ -139,6 +139,9 @@ def connection(message):
         time.sleep(3)
         bot.send_message(message.chat.id, 'Ok')
         channel.send('sudo -s\n')
+        while not data.endswith('pi# '):
+            resp = channel.recv(9999)
+            data += resp.decode()
         time.sleep(1)
         bot.send_message(message.chat.id, data)
         # return channel.recv(1024)
