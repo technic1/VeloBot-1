@@ -107,9 +107,10 @@ def command_consol(message):
         # channel.send(message.text[3:]+'\r\n')
         data = ''
         channel.send(message.text[3:]+'\n')
-        while not data.endswith('root'):
+        while not data.endswith('pi# '):
             resp = channel.recv(9999)
             data += resp.decode()
+        data = data[:data.find("root")]
         # data = channel.recv(9999)
         bot.send_message(message.chat.id, data)
     else:
