@@ -149,6 +149,7 @@ def connection(message):
             data += resp.decode()
         time.sleep(1)
         bot.send_message(message.chat.id, data)
+        bot.send_message(message.chat.id, 'Ok\nNow u can write a command, for example: /c ls')
         # return channel.recv(1024)
     else:
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
