@@ -6,6 +6,7 @@ import utils
 import os
 import paramiko
 import time
+from telebot import types
 
 #### параметры ssh
 host = config.host
@@ -33,6 +34,10 @@ authorized_user = []
 if os.stat(auth_file).st_size != 0: #### если файл не пустой, читаем из него id авторизованных юзеров
     with open (auth_file, 'r') as k:
         authorized_user = json.load(k)
+
+markup = types.ReplyKeyboardMarkup(row_width=1, one_time_keyboard=True)
+btn_auth = types.KeyboardButton('/auth')
+markup.add(btn_auth)
 
 @bot.message_handler(commands=['auth'])
 def welcome_msg(message):
@@ -157,6 +162,7 @@ def connection(message):
     else:
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
         bot.register_next_step_handler(error, welcome_msg)
+
 
 if __name__ == '__main__':
     bot.polling(none_stop=True)
