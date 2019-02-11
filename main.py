@@ -42,7 +42,7 @@ def start_msg(message):
     # btn_connect = types.KeyboardButton('/con')
     # markup.add(btn_auth, btn_connect)
     # bot.send_message(message.chat.id, 'Authorization now', reply_markup=markup)
-    utils.create_stations()
+    bot.send_message(message.chat.id, 'Station number', reply_markup=utils.create_stations())
 
 @bot.message_handler(commands=['auth'])
 def welcome_msg(message):

@@ -2,6 +2,7 @@ import random
 import string
 import paramiko
 import config
+import csv
 from telebot import types
 
 def connect_vpn(): #### подключение к серверу по ssh
@@ -27,6 +28,10 @@ def command_local(exe): #### функция выполнения прислан�
 def buildblock(size): #### генерация защитного кода
     return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(size))
 
+def create_callback_data(action,number):
+    """ Create the callback data associated to each button"""
+    return ";".join([action,str(number)])
+
 def create_stations():
     index = 0
     new_stations = []
@@ -39,7 +44,7 @@ def create_stations():
     keyboard = []
     row = []
     for station in new_stations:
-        row.append(types.InlineKeyboardButton(station[0], station[1]))
+        row.append(types.InlineKeyboardButton(station[0], station[1], callback_data=station[0]))
     keyboard.append(row)
     return types.InlineKeyboardMarkup(keyboard)
 
