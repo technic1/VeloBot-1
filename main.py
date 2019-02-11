@@ -89,7 +89,7 @@ def check_confirm(message):
 
 @bot.message_handler(commands=['check'])
 def test_command(message):
-    bot.send_message(message.chat.id, message.text)
+    bot.send_message(message.chat.id, utils.create_stations())
 
 @bot.message_handler(commands=['connect'])
 def connect(message):
