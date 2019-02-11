@@ -41,11 +41,11 @@ def create_stations():
             if index > 0:
                 new_stations.append(row)
             index += 1
-    keyboard = []
-    row = []
-    for station in new_stations:
-        row.append(types.InlineKeyboardButton(station[0], station[1],
-                                              callback_data=create_callback_data("station", station[0]))
-    keyboard.append(row)
+    # keyboard = []
+    # row = []
+    #for station in new_stations:
+    #    row.append(types.InlineKeyboardButton(station[0], station[1],
+    #                                          callback_data=create_callback_data("station", station[0]))
+    # keyboard.append(row)
     return new_stations
 
