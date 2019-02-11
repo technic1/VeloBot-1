@@ -40,7 +40,8 @@ if os.stat(auth_file).st_size != 0: #### если файл не пустой, ч
 def start_msg(message):
     markup = types.ReplyKeyboardMarkup(row_width=1, one_time_keyboard=True)
     btn_auth = types.KeyboardButton('/auth')
-    markup.add(btn_auth)
+    btn_connect = types.KeyboardButton('/con')
+    markup.add(btn_auth, btn_connect)
     bot.send_message(message.chat.id, 'Authorization now', reply_markup=markup)
 
 @bot.message_handler(commands=['auth'])
@@ -129,7 +130,7 @@ def command_consol(message):
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
         bot.register_next_step_handler(error, welcome_msg)
 
-@bot.message_handler(commands=['con'])
+@bot.message_handler(commands=['con'], regexp="Connect")
 def connection(message):
     if message.chat.id in authorized_user:
         bot.send_message(message.chat.id, 'Please wait about 20 seconds')
@@ -142,7 +143,7 @@ def connection(message):
         # channel.get_pty()
         # channel.settimeout(5)
         channel = client.invoke_shell()
-        channel.send('ssh pi@192.168.78.{}'.format(message.text[5:])+'\n')
+        channel.send('ssh pi@192.168.78.{}'.format(message.text[:-2])+'\n')
         data = ''
         while not data.endswith('\'s password: '):
             resp = channel.recv(9999)
