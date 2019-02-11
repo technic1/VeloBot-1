@@ -30,7 +30,7 @@ def buildblock(size): #### генерация защитного кода
 def create_stations():
     index = 0
     new_stations = []
-    with open('stations_spb.csv', 'r', encoding="utf8") as stations_spb:
+    with open('stations.csv', 'r', encoding="utf8") as stations_spb:
         reader = csv.reader(stations_spb, dialect=csv.excel_tab)
         for row in reader:
             if index > 0:
