@@ -104,7 +104,9 @@ def close_connection():
 @bot.message_handler(commands=['c'])
 def command_consol(message):
     if message.chat.id in authorized_user:
-        channel.send(message.text[3:])
+        channel.send(message.text[3:]+'\n')
+        while not channel.recv_ready():
+            time.sleep(1)
         data = channel.recv(1024)
         bot.send_message(message.chat.id, data)
     else:
@@ -114,19 +116,15 @@ def command_consol(message):
 @bot.message_handler(commands=['con'])
 def connection(message):
     if message.chat.id in authorized_user:
-        global client
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(hostname=config.host, username=config.user, password=config.secret, port=config.port)
-        global channel
-        channel = client.get_transport().open_session()
-        channel.get_pty()
-        channel.settimeout(5)
-        channel.invoke_shell
+        client_station = client.
         channel = client.invoke_shell()
         channel.send('ssh pi@192.168.78.{}'.format(message.text[5:])+'\n')
         time.sleep(2)
         channel.send(local_password + '\n')
+        # return channel.recv(1024)
     else:
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
         bot.register_next_step_handler(error, welcome_msg)
