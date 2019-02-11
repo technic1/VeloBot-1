@@ -35,9 +35,13 @@ if os.stat(auth_file).st_size != 0: #### если файл не пустой, ч
     with open (auth_file, 'r') as k:
         authorized_user = json.load(k)
 
-markup = types.ReplyKeyboardMarkup(row_width=1, one_time_keyboard=True)
-btn_auth = types.KeyboardButton('/auth')
-markup.add(btn_auth)
+
+@bot.message_handler(commands=['start'])
+def start_msg(message):
+    markup = types.ReplyKeyboardMarkup(row_width=1, one_time_keyboard=True)
+    btn_auth = types.KeyboardButton('/auth')
+    markup.add(btn_auth)
+    bot.send_message(message.chat.id, 'Authorization now', reply_markup=markup)
 
 @bot.message_handler(commands=['auth'])
 def welcome_msg(message):
