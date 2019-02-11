@@ -30,7 +30,6 @@ authorized_user = []
 
 #### подключение по локальной сети
 
-
 if os.stat(auth_file).st_size != 0: #### если файл не пустой, читаем из него id авторизованных юзеров
     with open (auth_file, 'r') as k:
         authorized_user = json.load(k)
@@ -38,11 +37,12 @@ if os.stat(auth_file).st_size != 0: #### если файл не пустой, ч
 
 @bot.message_handler(commands=['start'])
 def start_msg(message):
-    markup = types.ReplyKeyboardMarkup(row_width=1, one_time_keyboard=True)
-    btn_auth = types.KeyboardButton('/auth')
-    btn_connect = types.KeyboardButton('/con')
-    markup.add(btn_auth, btn_connect)
-    bot.send_message(message.chat.id, 'Authorization now', reply_markup=markup)
+    # markup = types.ReplyKeyboardMarkup(row_width=1, one_time_keyboard=True)
+    # btn_auth = types.KeyboardButton('/auth')
+    # btn_connect = types.KeyboardButton('/con')
+    # markup.add(btn_auth, btn_connect)
+    # bot.send_message(message.chat.id, 'Authorization now', reply_markup=markup)
+    utils.create_stations()
 
 @bot.message_handler(commands=['auth'])
 def welcome_msg(message):

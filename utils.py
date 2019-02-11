@@ -2,6 +2,7 @@ import random
 import string
 import paramiko
 import config
+from telebot import types
 
 def connect_vpn(): #### подключение к серверу по ssh
     global client
@@ -26,4 +27,19 @@ def command_local(exe): #### функция выполнения прислан�
 def buildblock(size): #### генерация защитного кода
     return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(size))
 
+def create_stations():
+    index = 0
+    new_stations = []
+    with open('stations_spb.csv', 'r', encoding="utf8") as stations_spb:
+        reader = csv.reader(stations_spb, dialect=csv.excel_tab)
+        for row in reader:
+            if index > 0:
+                new_stations.append(row)
+            index += 1
+    keyboard = []
+    row = []
+    for station in new_stations:
+        row.append(types.InlineKeyboardButton(station[0], station[1]))
+    keyboard.append(row)
+    return types.InlineKeyboardMarkup(keyboard)
 
