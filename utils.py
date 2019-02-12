@@ -47,5 +47,5 @@ def create_stations():
     #    row.append(types.InlineKeyboardButton(station[0], station[1],
     #                                          callback_data=create_callback_data("station", station[0]))
     # keyboard.append(row)
-    return new_stations
+    return new_stations[1]
 
