@@ -48,7 +48,7 @@ def start_msg(message):
 
 def keyboard(message):
     if message.text == 'Authorization':
-        auth_txt = 'Authorization now'
+        auth_txt = bot.send_message(message.chat.id, 'Authorization now')
         bot.register_next_step_handler(auth_txt, welcome_msg)
     elif message.text == 'Connect':
         bot.send_message(message.chat.id, 'Please write station number')
