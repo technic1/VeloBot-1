@@ -37,12 +37,21 @@ if os.stat(auth_file).st_size != 0: #### если файл не пустой, ч
 
 @bot.message_handler(commands=['start'])
 def start_msg(message):
-    # markup = types.ReplyKeyboardMarkup(row_width=1, one_time_keyboard=True)
-    # btn_auth = types.KeyboardButton('/auth')
-    # btn_connect = types.KeyboardButton('/con')
-    # markup.add(btn_auth, btn_connect)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    btn_auth = types.KeyboardButton('Authorization')
+    btn_connect = types.KeyboardButton('Connect')
+    markup.add(btn_auth, btn_connect)
     # bot.send_message(message.chat.id, 'Authorization now', reply_markup=markup)
-    bot.send_message(message.chat.id, 'Station number', reply_markup=utils.create_stations())
+    # bot.send_message(message.chat.id, 'Station number', reply_markup=utils.create_stations())
+    bot.send_message(message.chat.id, 'Start', reply_markup=markup)
+    if message.text == 'Authorization':
+        auth_txt = 'Authorization now'
+        bot.register_next_step_handler(auth_txt, welcome_msg)
+    elif message.text == 'Connect':
+        bot.send_message(message.chat.id, 'Please write station number')
+        st_num = message.text
+        con_txt = 'Connect...'
+        bot.register_next_step_handler(con_txt, connection(message.chat.id, '/con {}'.format(st_num)))
 
 @bot.message_handler(commands=['auth'])
 def welcome_msg(message):
@@ -130,7 +139,7 @@ def command_consol(message):
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
         bot.register_next_step_handler(error, welcome_msg)
 
-@bot.message_handler(commands=['con'], regexp="Connect")
+@bot.message_handler(commands=['con'])
 def connection(message):
     if message.chat.id in authorized_user:
         bot.send_message(message.chat.id, 'Please wait about 20 seconds')
@@ -143,7 +152,7 @@ def connection(message):
         # channel.get_pty()
         # channel.settimeout(5)
         channel = client.invoke_shell()
-        channel.send('ssh pi@192.168.78.{}'.format(message.text[:-2])+'\n')
+        channel.send('ssh pi@192.168.78.{}'.format(message.text[5:])+'\n')
         data = ''
         while not data.endswith('\'s password: '):
             resp = channel.recv(9999)
