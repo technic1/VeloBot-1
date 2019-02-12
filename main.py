@@ -43,7 +43,10 @@ def start_msg(message):
     markup.add(btn_auth, btn_connect)
     # bot.send_message(message.chat.id, 'Authorization now', reply_markup=markup)
     # bot.send_message(message.chat.id, 'Station number', reply_markup=utils.create_stations())
-    bot.send_message(message.chat.id, 'Start', reply_markup=markup)
+    next_msg = bot.send_message(message.chat.id, 'Start', reply_markup=markup)
+    bot.register_next_step_handler(next_msg, keyboard)
+
+def keyboard(message):
     if message.text == 'Authorization':
         auth_txt = 'Authorization now'
         bot.register_next_step_handler(auth_txt, welcome_msg)
