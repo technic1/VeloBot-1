@@ -62,8 +62,8 @@ def password_auth(message):
         with open (pswd_file, 'w') as f:
             json.dump(check_code, f)
         bot.send_message(43162157, check_code)
-        accept = bot.send_message(message.chat.id, 'Введите код подтверждения.')
-        bot.register_next_step_handler(accept, check_confirm)
+        bot.send_message(message.chat.id, 'Введите код подтверждения.')
+        # bot.register_next_step_handler(accept, check_confirm)
 
 def check_confirm(message):
     with open (pswd_file,'r') as f:
