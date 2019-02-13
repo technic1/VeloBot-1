@@ -119,7 +119,6 @@ def connection(message):
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(hostname=config.host, username=config.user, password=config.secret, port=config.port)
-        client_station = client.
         channel = client.invoke_shell()
         channel.send('ssh pi@192.168.78.{}'.format(message.text[5:])+'\n')
         time.sleep(2)
