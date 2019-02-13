@@ -48,7 +48,7 @@ def start_msg(message):
 def start_auth(message):
     if message.text == 'Authorization':
         n_msg = bot.send_message(message.chat.id, 'Start auth')
-        bot.register_next_step_handler_by_chat_id(message.chat.id, welcome_msg)
+        bot.register_next_step_handler(n_msg, welcome_msg, message.chat.id)
 
 
 def welcome_msg(chat_id):
