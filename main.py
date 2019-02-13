@@ -51,7 +51,7 @@ def start_auth(message):
         bot.register_next_step_handler(n_msg, welcome_msg, message.chat.id)
 
 
-def welcome_msg(chat_id):
+def welcome_msg(self, chat_id):
     if chat_id not in authorized_user:
         msglog = bot.send_message(chat_id, "Введите логин")
         bot.register_next_step_handler(msglog, login_auth)
