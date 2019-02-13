@@ -5,6 +5,11 @@ __pycache__/
 
 # Configuration file
 config.py
+password.txt
+stations.csv
+authorized.json
+Procfile
+Pipfile.lock
 
 # C extensions
 *.so
