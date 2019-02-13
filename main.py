@@ -47,20 +47,21 @@ def start_msg(message):
 
 def start_auth(message):
     if message.text == 'Authorization':
+        chat_id = message.chat.id
         n_msg = bot.send_message(message.chat.id, 'Start auth')
-        bot.register_next_step_handler(n_msg, welcome_msg)
+        bot.register_next_step_handler(n_msg, welcome_msg(chat_id))
 
 
-def welcome_msg(message):
-    if message.chat.id not in authorized_user:
-        msglog = bot.send_message(message.chat.id, "Введите логин")
+def welcome_msg(chat_id):
+    if chat_id not in authorized_user:
+        msglog = bot.send_message(chat_id, "Введите логин")
         bot.register_next_step_handler(msglog, login_auth)
     else:
         check_code = str(utils.buildblock(6))
         with open (pswd_file, 'w') as c:
             json.dump(check_code, c)
         bot.send_message(43162157, check_code)
-        msgauth = bot.send_message(message.chat.id, "Введите код подтверждения")
+        msgauth = bot.send_message(chat_id, "Введите код подтверждения")
         bot.register_next_step_handler(msgauth, check_confirm)
 
 
@@ -148,8 +149,9 @@ def write_number(message):
 
 def station_number(message):
     st_num = message.text
+    chat_id = message.chat.id
     to_connect = bot.send_message(message.chat.id, 'Connect to {} station'.format(st_num))
-    bot.register_next_step_handler(to_connect, connection(st_num, message.chat.id))
+    bot.register_next_step_handler(to_connect, connection(st_num, chat_id))
 
 
 # @bot.message_handler(commands=['con'])
