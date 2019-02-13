@@ -47,7 +47,7 @@ def start_msg(message):
 
 def start_auth(message):
     if message.text == 'Authorization':
-        n_msg = bot.send_message(message.chat.id, 'Start auth')
+        n_msg = bot.send_message(message.chat.id, 'Start auth. Insert Ok')
         bot.register_next_step_handler(n_msg, welcome_msg, message.chat.id)
 
 
@@ -150,11 +150,11 @@ def station_number(message):
     st_num = message.text
     chat_id = message.chat.id
     to_connect = bot.send_message(message.chat.id, 'Connect to {} station'.format(st_num))
-    bot.register_next_step_handler(to_connect, connection(st_num, chat_id))
+    bot.register_next_step_handler(to_connect, connection, st_num, chat_id)
 
 
 # @bot.message_handler(commands=['con'])
-def connection(num, chat_id):
+def connection(self, num, chat_id):
     bot.send_message(chat_id, 'Please wait about 20 seconds')
     global client
     client = paramiko.SSHClient()
