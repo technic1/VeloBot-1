@@ -45,8 +45,11 @@ def start_msg(message):
         next_msg = bot.send_message(message.chat.id, 'Start', reply_markup=markup)
         bot.register_next_step_handler(next_msg, start_auth)
     else:
-        msg = bot.send_message(message.chat.id, 'Start work now')
-        bot.register_next_step_handler(msg, work)
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        connect_btn = types.KeyboardButton('Connect')
+        markup.add(connect_btn)
+        work_msg = bot.send_message(message.chat.id, 'Start work now', reply_markup=markup)
+        bot.register_next_step_handler(work_msg, write_number)
 
 
 def start_auth(message):
@@ -92,17 +95,9 @@ def check_confirm(message):
             authorized_user.append(message.chat.id)
             with open(auth_file, 'w') as d:
                 json.dump(authorized_user, d)
-        bot.register_next_step_handler(msg, work)
+        bot.register_next_step_handler(msg, start_msg)
     else: 
         bot.send_message(message.chat.id, 'Неверный код')
-
-
-def work(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    connect_btn = types.KeyboardButton('Connect')
-    markup.add(connect_btn)
-    work_msg = bot.send_message(message.chat.id, 'Start work now', reply_markup=markup)
-    bot.register_next_step_handler(work_msg, write_number)
 
 
 @bot.message_handler(commands=['check'])
