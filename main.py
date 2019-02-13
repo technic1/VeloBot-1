@@ -142,7 +142,7 @@ def write_number(message):
     if message.text == 'Connect':
         wr_num = bot.send_message(message.chat.id, 'Write station number')
         chat_id = message.chat.id
-        bot.register_next_step_handler(wr_num, connection, chat_id)
+        bot.register_next_step_handler(wr_num, connection)
 
 
 def connection(message):
