@@ -48,23 +48,19 @@ def start_msg(message):
         msg = bot.send_message(message.chat.id, 'Start work now')
         bot.register_next_step_handler(msg, work)
 
+
 def start_auth(message):
     if message.text == 'Authorization':
-        n_msg = bot.send_message(message.chat.id, 'Start auth. Insert Ok')
-        bot.register_next_step_handler(n_msg, welcome_msg)
-
-
-def welcome_msg(message):
-    if message.chat.id not in authorized_user:
-        msglog = bot.send_message(message.chat.id, "Введите логин")
-        bot.register_next_step_handler(msglog, login_auth)
-    else:
-        check_code = str(utils.buildblock(6))
-        with open (pswd_file, 'w') as c:
-            json.dump(check_code, c)
-        bot.send_message(43162157, check_code)
-        msgauth = bot.send_message(message.chat.id, "Введите код подтверждения")
-        bot.register_next_step_handler(msgauth, check_confirm)
+        if message.chat.id not in authorized_user:
+            msglog = bot.send_message(message.chat.id, "Введите логин")
+            bot.register_next_step_handler(msglog, login_auth)
+        else:
+            check_code = str(utils.buildblock(6))
+            with open(pswd_file, 'w') as c:
+                json.dump(check_code, c)
+            bot.send_message(43162157, check_code)
+            msgauth = bot.send_message(message.chat.id, "Введите код подтверждения")
+            bot.register_next_step_handler(msgauth, check_confirm)
 
 
 def login_auth(message):
@@ -108,6 +104,7 @@ def work(message):
     work_msg = bot.send_message(message.chat.id, 'Start work now', reply_markup=markup)
     bot.register_next_step_handler(work_msg, write_number)
 
+
 @bot.message_handler(commands=['check'])
 def test_command(message):
     bot.send_message(message.chat.id, utils.create_stations())
@@ -149,18 +146,13 @@ def command_console(message):
 def write_number(message):
     if message.text == 'Connect':
         wr_num = bot.send_message(message.chat.id, 'Write station number')
-        bot.register_next_step_handler(wr_num, station_number)
-
-
-def station_number(message):
-    st_num = message.text
-    chat_id = message.chat.id
-    to_connect = bot.send_message(message.chat.id, 'Connect to {} station'.format(st_num))
-    bot.register_next_step_handler(to_connect, connection, st_num, chat_id)
+        st_num = message.text
+        chat_id = message.chat.id
+        bot.register_next_step_handler(wr_num, connection, st_num, chat_id)
 
 
 def connection(self, num, chat_id):
-    bot.send_message(chat_id, 'Please wait about 20 seconds')
+    bot.send_message(chat_id, 'Connect to {} station. Please wait about 20 seconds'.format(num))
     global client
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
