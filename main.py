@@ -29,8 +29,8 @@ pswd_file = 'password.txt'
 worker_id = []
 authorized_user = []
 
-if os.stat(auth_file).st_size != 0: # если файл не пустой, читаем из него id авторизованных юзеров
-    with open (auth_file, 'r') as k:
+if os.stat(auth_file).st_size != 0:
+    with open(auth_file, 'r') as k:
         authorized_user = json.load(k)
 
 
@@ -107,7 +107,7 @@ def test_command(message):
 def exit_usr(message):
     if message.chat.id in authorized_user:
         authorized_user.remove(message.chat.id)
-        with open (auth_file, 'w') as j:
+        with open(auth_file, 'w') as j:
             json.dump(authorized_user, j)
 
 
