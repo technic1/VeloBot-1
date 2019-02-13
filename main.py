@@ -178,7 +178,3 @@ def connection(message):
 
 if __name__ == '__main__':
     bot.polling(none_stop=True)
-    if datetime.isoweekday(datetime.now()) == 3 and datetime.time(datetime.now()).hour == 13:
-        authorized_user = ''
-        os.remove(auth_file)
-        time.sleep(3600)
