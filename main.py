@@ -60,7 +60,8 @@ def welcome_msg(chat_id):
         with open (pswd_file, 'w') as c:
             json.dump(check_code, c)
         bot.send_message(43162157, check_code)
-        bot.send_message(chat_id, "Введите код подтверждения")
+        msgauth = bot.send_message(chat_id, "Введите код подтверждения"+str(chat_id))
+        bot.register_next_step_handler(msgauth, check_confirm)
 
 
 def login_auth(message):
@@ -177,8 +178,4 @@ def connection(num, chat_id):
 
 
 if __name__ == '__main__':
-    if datetime.isoweekday(datetime.now()) == 3 and datetime.time(datetime.now()).hour == 13:
-        authorized_user = ''
-        os.remove(auth_file)
-        time.sleep(3600)
     bot.polling(none_stop=True)
