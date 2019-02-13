@@ -141,13 +141,13 @@ def command_console(message):
 def write_number(message):
     if message.text == 'Connect':
         wr_num = bot.send_message(message.chat.id, 'Write station number')
-        st_num = message.text
         chat_id = message.chat.id
-        bot.register_next_step_handler(wr_num, connection, st_num, chat_id)
+        bot.register_next_step_handler(wr_num, connection, chat_id)
 
 
-def connection(self, num, chat_id):
-    bot.send_message(chat_id, 'Connect to {} station. Please wait about 20 seconds'.format(num))
+def connection(message):
+    num = message.text
+    bot.send_message(message.chat.id, 'Connect to {} station. Please wait about 20 seconds'.format(num))
     global client
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -170,7 +170,7 @@ def connection(self, num, chat_id):
         resp = channel.recv(9999)
         data += resp.decode()
     time.sleep(1)
-    bot.send_message(chat_id, 'Ok\nNow u can write a command, for example: /c ls')
+    bot.send_message(message.chat.id, 'Ok\nNow u can write a command, for example: /c ls')
 
 
 if __name__ == '__main__':
