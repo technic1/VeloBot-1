@@ -5,8 +5,9 @@ import json
 import utils
 import os
 import paramiko
-import time
+from datetime import datetime
 from telebot import types
+import time
 
 #### параметры ssh
 host = config.host
@@ -39,34 +40,25 @@ if os.stat(auth_file).st_size != 0: #### если файл не пустой, ч
 def start_msg(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     btn_auth = types.KeyboardButton('Authorization')
-    btn_connect = types.KeyboardButton('Connect')
-    markup.add(btn_auth, btn_connect)
+    # btn_connect = types.KeyboardButton('Connect')
+    markup.add(btn_auth)
     # bot.send_message(message.chat.id, 'Authorization now', reply_markup=markup)
     # bot.send_message(message.chat.id, 'Station number', reply_markup=utils.create_stations())
     next_msg = bot.send_message(message.chat.id, 'Start', reply_markup=markup)
-    bot.register_next_step_handler(next_msg, keyboard)
-
-def keyboard(message):
     if message.text == 'Authorization':
-        auth_txt = bot.send_message(message.chat.id, 'Authorization now')
-        bot.register_next_step_handler(auth_txt, welcome_msg(message.chat))
-    elif message.text == 'Connect':
-        bot.send_message(message.chat.id, 'Please write station number')
-        st_num = message.text
-        con_txt = 'Connect...'
-        bot.register_next_step_handler(con_txt, connection(message.chat.id, '/con {}'.format(st_num)))
+        bot.register_next_step_handler(next_msg, welcome_msg(message.chat.id))
 
-@bot.message_handler(commands=['auth'])
-def welcome_msg(message):
-    if message.chat.id not in authorized_user:
-        msglog = bot.send_message(message.chat.id, "Введите логин")
+# @bot.message_handler(commands=['auth'])
+def welcome_msg(chat_id):
+    if chat_id not in authorized_user:
+        msglog = bot.send_message(chat_id, "Введите логин")
         bot.register_next_step_handler(msglog, login_auth)
     else:
         check_code = str(utils.buildblock(6))
         with open (pswd_file, 'w') as c:
             json.dump(check_code, c)
         bot.send_message(43162157, check_code)
-        msgauth = bot.send_message(message.chat.id, "Введите код подтверждения")
+        msgauth = bot.send_message(chat_id, "Введите код подтверждения")
         bot.register_next_step_handler(msgauth, check_confirm)
 
 def login_auth(message):
@@ -180,6 +172,9 @@ def connection(message):
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
         bot.register_next_step_handler(error, welcome_msg)
 
-
 if __name__ == '__main__':
     bot.polling(none_stop=True)
+    if datetime.isoweekday(datetime.now()) == 3 and datetime.time(datetime.now()).hour == 13:
+        authorized_user = ''
+        os.remove(auth_file)
+        time.sleep(3600)
