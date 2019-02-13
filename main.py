@@ -29,8 +29,6 @@ pswd_file = 'password.txt'
 worker_id = []
 authorized_user = []
 
-# подключение по локальной сети
-
 if os.stat(auth_file).st_size != 0: # если файл не пустой, читаем из него id авторизованных юзеров
     with open (auth_file, 'r') as k:
         authorized_user = json.load(k)
@@ -119,29 +117,9 @@ def close_connection():
     client.close()
 
 
-@bot.message_handler(commands=['c'])
-def command_console(message):
-    if message.chat.id in authorized_user:
-        # channel.send(message.text[3:]+'\r\n')
-        data = ''
-        channel.send(message.text[3:]+'\n')
-        while not data.endswith('# '):
-            resp = channel.recv(9999)
-            data += resp.decode()
-        data = data[data.find(message.text[3:]) + len(message.text[3:]):data.find("root")]
-        try:
-            bot.send_message(message.chat.id, data)
-        except:
-            bot.send_message(message.chat.id, 'empty...')
-    else:
-        error = bot.send_message(message.chat.id, 'Вы не авторизованы')
-        bot.register_next_step_handler(error, welcome_msg)
-
-
 def write_number(message):
     if message.text == 'Connect':
         wr_num = bot.send_message(message.chat.id, 'Write station number')
-        chat_id = message.chat.id
         bot.register_next_step_handler(wr_num, connection)
 
 
@@ -170,7 +148,30 @@ def connection(message):
         resp = channel.recv(9999)
         data += resp.decode()
     time.sleep(1)
+    markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, row_width=2)
+    markup.row('List', 'New', 'Change', 'Delete')
+    markup.row('Open', 'Close')
+
     bot.send_message(message.chat.id, 'Ok\nNow u can write a command, for example: /c ls')
+
+
+@bot.message_handler(commands=['c'])
+def command_console(message):
+    if message.chat.id in authorized_user:
+        # channel.send(message.text[3:]+'\r\n')
+        data = ''
+        channel.send(message.text[3:]+'\n')
+        while not data.endswith('# '):
+            resp = channel.recv(9999)
+            data += resp.decode()
+        data = data[data.find(message.text[3:]) + len(message.text[3:]):data.find("root")]
+        try:
+            bot.send_message(message.chat.id, data)
+        except:
+            bot.send_message(message.chat.id, 'empty...')
+    else:
+        error = bot.send_message(message.chat.id, 'Вы не авторизованы')
+        bot.register_next_step_handler(error, start_msg)
 
 
 if __name__ == '__main__':
