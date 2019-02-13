@@ -84,7 +84,7 @@ def password_auth(message):
         bot.register_next_step_handler(accept, check_confirm)
 
 def check_confirm(message):
-    with open (pswd_file,'r') as f:
+    with open (pswd_file, 'r') as f:
         check_code = f.read()
     if message.text in check_code:
         bot.send_message(message.chat.id, 'Всё окей. Ваш chat.id='+str(message.chat.id))
@@ -92,6 +92,11 @@ def check_confirm(message):
             authorized_user.append(message.chat.id)
             with open (auth_file, 'w') as d:
                 json.dump(authorized_user, d)
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        connect_btn = types.KeyboardButton('Connect')
+        markup.add(connect_btn)
+        work_msg = bot.send_message(message.chat.id, 'Start work now', reply_markup=markup)
+        bot.register_next_step_handler(work_msg, station_number)
     else: 
         bot.send_message(message.chat.id, 'Неверный код')
 
@@ -99,20 +104,12 @@ def check_confirm(message):
 def test_command(message):
     bot.send_message(message.chat.id, utils.create_stations())
 
-@bot.message_handler(commands=['connect'])
-def connect(message):
-    if 'local' in message.text:
-        vpn.local_connect()
-    else:
-        vpn.connect_vpn()
-
 @bot.message_handler(commands=['exit'])
 def exit_usr(message):
     if message.chat.id in authorized_user:
         authorized_user.remove(message.chat.id)
         with open (auth_file, 'w') as j:
             json.dump(authorized_user, j)
-        bot.send_message(message.chat.id, 'иди нахуй, Марина')
 
 @bot.message_handler(commands=['close'])
 def close_connection():
@@ -138,9 +135,16 @@ def command_consol(message):
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
         bot.register_next_step_handler(error, welcome_msg)
 
-@bot.message_handler(commands=['con'])
-def connection(message):
-    if message.chat.id in authorized_user:
+def station_number(message):
+    if message.text == 'Connect':
+        bot.send_message(message.chat.id, 'Write station number')
+        st_num = message.text
+        to_connect = bot.send_message(message.chat.id, 'Connect to {} station'.format(st_num))
+        bot.register_next_step_handler(to_connect, connection(st_num, message.chat.id))
+
+# @bot.message_handler(commands=['con'])
+def connection(num, chat_id):
+    if message.text == 'Connect':
         bot.send_message(message.chat.id, 'Please wait about 20 seconds')
         global client
         client = paramiko.SSHClient()
@@ -151,7 +155,7 @@ def connection(message):
         # channel.get_pty()
         # channel.settimeout(5)
         channel = client.invoke_shell()
-        channel.send('ssh pi@192.168.78.{}'.format(message.text[5:])+'\n')
+        channel.send('ssh pi@192.168.78.{}'.format(num)+'\n')
         data = ''
         while not data.endswith('\'s password: '):
             resp = channel.recv(9999)
@@ -169,12 +173,13 @@ def connection(message):
             resp = channel.recv(9999)
             data += resp.decode()
         time.sleep(1)
-        bot.send_message(message.chat.id, data)
-        bot.send_message(message.chat.id, 'Ok\nNow u can write a command, for example: /c ls')
+        bot.send_message(chat_id, data)
+        bot.send_message(chat_id, 'Ok\nNow u can write a command, for example: /c ls')
         # return channel.recv(1024)
-    else:
-        error = bot.send_message(message.chat.id, 'Вы не авторизованы')
-        bot.register_next_step_handler(error, welcome_msg)
 
 if __name__ == '__main__':
+    if datetime.isoweekday(datetime.now()) == 3 and datetime.time(datetime.now()).hour == 13:
+        authorized_user = ''
+        os.remove(auth_file)
+        time.sleep(3600)
     bot.polling(none_stop=True)
