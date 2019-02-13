@@ -97,7 +97,7 @@ def check_confirm(message):
         connect_btn = types.KeyboardButton('Connect')
         markup.add(connect_btn)
         work_msg = bot.send_message(message.chat.id, 'Start work now', reply_markup=markup)
-        bot.register_next_step_handler(work_msg, station_number)
+        bot.register_next_step_handler(work_msg, write_number)
     else: 
         bot.send_message(message.chat.id, 'Неверный код')
 
@@ -140,12 +140,16 @@ def command_consol(message):
         bot.register_next_step_handler(error, welcome_msg)
 
 
-def station_number(message):
+def write_number(message):
     if message.text == 'Connect':
-        bot.send_message(message.chat.id, 'Write station number')
-        st_num = message.text
-        to_connect = bot.send_message(message.chat.id, 'Connect to {} station'.format(st_num))
-        bot.register_next_step_handler(to_connect, connection(st_num, message.chat.id))
+        wr_num = bot.send_message(message.chat.id, 'Write station number')
+        bot.register_next_step_handler(wr_num, station_number)
+
+
+def station_number(message):
+    st_num = message.text
+    to_connect = bot.send_message(message.chat.id, 'Connect to {} station'.format(st_num))
+    bot.register_next_step_handler(to_connect, connection(st_num, message.chat.id))
 
 
 # @bot.message_handler(commands=['con'])
