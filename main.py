@@ -38,12 +38,15 @@ if os.stat(auth_file).st_size != 0: # если файл не пустой, чи�
 
 @bot.message_handler(commands=['start'])
 def start_msg(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    btn_auth = types.KeyboardButton('Authorization')
-    markup.add(btn_auth)
-    next_msg = bot.send_message(message.chat.id, 'Start', reply_markup=markup)
-    bot.register_next_step_handler(next_msg, start_auth)
-
+    if message.chat.id not in authorized_user:
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        btn_auth = types.KeyboardButton('Authorization')
+        markup.add(btn_auth)
+        next_msg = bot.send_message(message.chat.id, 'Start', reply_markup=markup)
+        bot.register_next_step_handler(next_msg, start_auth)
+    else:
+        msg = bot.send_message(message.chat.id, 'Start work now')
+        bot.register_next_step_handler(msg, work)
 
 def start_auth(message):
     if message.text == 'Authorization':
@@ -88,19 +91,22 @@ def check_confirm(message):
     with open(pswd_file, 'r') as f:
         check_code = f.read()
     if message.text in check_code:
-        bot.send_message(message.chat.id, 'Всё окей. Ваш chat.id='+str(message.chat.id))
+        msg = bot.send_message(message.chat.id, 'Всё окей. Ваш chat.id='+str(message.chat.id))
         if message.chat.id not in authorized_user:
             authorized_user.append(message.chat.id)
             with open(auth_file, 'w') as d:
                 json.dump(authorized_user, d)
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-        connect_btn = types.KeyboardButton('Connect')
-        markup.add(connect_btn)
-        work_msg = bot.send_message(message.chat.id, 'Start work now', reply_markup=markup)
-        bot.register_next_step_handler(work_msg, write_number)
+        bot.register_next_step_handler(msg, work)
     else: 
         bot.send_message(message.chat.id, 'Неверный код')
 
+
+def work(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    connect_btn = types.KeyboardButton('Connect')
+    markup.add(connect_btn)
+    work_msg = bot.send_message(message.chat.id, 'Start work now', reply_markup=markup)
+    bot.register_next_step_handler(work_msg, write_number)
 
 @bot.message_handler(commands=['check'])
 def test_command(message):
@@ -122,7 +128,7 @@ def close_connection():
 
 
 @bot.message_handler(commands=['c'])
-def command_consol(message):
+def command_console(message):
     if message.chat.id in authorized_user:
         # channel.send(message.text[3:]+'\r\n')
         data = ''
@@ -150,19 +156,18 @@ def station_number(message):
     st_num = message.text
     chat_id = message.chat.id
     to_connect = bot.send_message(message.chat.id, 'Connect to {} station'.format(st_num))
-    bot.register_next_step_handler(to_connect, connection)
+    bot.register_next_step_handler(to_connect, connection, st_num, chat_id)
 
 
-# @bot.message_handler(commands=['con'])
-def connection(message):
-    bot.send_message(message.chat.id, 'Please wait about 20 seconds')
+def connection(self, num, chat_id):
+    bot.send_message(chat_id, 'Please wait about 20 seconds')
     global client
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     client.connect(hostname=config.host, username=config.user, password=config.secret, port=config.port)
     global channel
     channel = client.invoke_shell()
-    channel.send('ssh pi@192.168.78.{}'.format(message.text)+'\n')
+    channel.send('ssh pi@192.168.78.{}'.format(num)+'\n')
     data = ''
     while not data.endswith('\'s password: '):
         resp = channel.recv(9999)
@@ -178,9 +183,12 @@ def connection(message):
         resp = channel.recv(9999)
         data += resp.decode()
     time.sleep(1)
-    bot.send_message(message.chat.id, data)
-    bot.send_message(message.chat.id, 'Ok\nNow u can write a command, for example: /c ls')
+    bot.send_message(chat_id, 'Ok\nNow u can write a command, for example: /c ls')
 
 
 if __name__ == '__main__':
     bot.polling(none_stop=True)
+    if datetime.isoweekday(datetime.now()) == 7 and datetime.time(datetime.now()).hour == 12:
+        authorized_user = ''
+        os.remove(auth_file)
+        time.sleep(4000)
