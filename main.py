@@ -48,19 +48,19 @@ def start_msg(message):
 def start_auth(message):
     if message.text == 'Authorization':
         n_msg = bot.send_message(message.chat.id, 'Start auth. Insert Ok')
-        bot.register_next_step_handler(n_msg, welcome_msg, message.chat.id)
+        bot.register_next_step_handler(n_msg, welcome_msg)
 
 
-def welcome_msg(self, chat_id):
-    if chat_id not in authorized_user:
-        msglog = bot.send_message(chat_id, "Введите логин")
+def welcome_msg(message):
+    if message.chat.id not in authorized_user:
+        msglog = bot.send_message(message.chat.id, "Введите логин")
         bot.register_next_step_handler(msglog, login_auth)
     else:
         check_code = str(utils.buildblock(6))
         with open (pswd_file, 'w') as c:
             json.dump(check_code, c)
         bot.send_message(43162157, check_code)
-        msgauth = bot.send_message(chat_id, "Введите код подтверждения")
+        msgauth = bot.send_message(message.chat.id, "Введите код подтверждения")
         bot.register_next_step_handler(msgauth, check_confirm)
 
 
@@ -150,19 +150,19 @@ def station_number(message):
     st_num = message.text
     chat_id = message.chat.id
     to_connect = bot.send_message(message.chat.id, 'Connect to {} station'.format(st_num))
-    bot.register_next_step_handler(to_connect, connection, st_num, chat_id)
+    bot.register_next_step_handler(to_connect, connection)
 
 
 # @bot.message_handler(commands=['con'])
-def connection(self, num, chat_id):
-    bot.send_message(chat_id, 'Please wait about 20 seconds')
+def connection(message):
+    bot.send_message(message.chat.id, 'Please wait about 20 seconds')
     global client
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     client.connect(hostname=config.host, username=config.user, password=config.secret, port=config.port)
     global channel
     channel = client.invoke_shell()
-    channel.send('ssh pi@192.168.78.{}'.format(num)+'\n')
+    channel.send('ssh pi@192.168.78.{}'.format(message.text)+'\n')
     data = ''
     while not data.endswith('\'s password: '):
         resp = channel.recv(9999)
@@ -178,8 +178,8 @@ def connection(self, num, chat_id):
         resp = channel.recv(9999)
         data += resp.decode()
     time.sleep(1)
-    bot.send_message(chat_id, data)
-    bot.send_message(chat_id, 'Ok\nNow u can write a command, for example: /c ls')
+    bot.send_message(message.chat.id, data)
+    bot.send_message(message.chat.id, 'Ok\nNow u can write a command, for example: /c ls')
 
 
 if __name__ == '__main__':
