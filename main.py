@@ -45,8 +45,12 @@ def start_msg(message):
     # bot.send_message(message.chat.id, 'Authorization now', reply_markup=markup)
     # bot.send_message(message.chat.id, 'Station number', reply_markup=utils.create_stations())
     next_msg = bot.send_message(message.chat.id, 'Start', reply_markup=markup)
+    bot.register_next_step_handler(next_msg, start_auth)
+
+def start_auth(message):
     if message.text == 'Authorization':
-        bot.register_next_step_handler(next_msg, welcome_msg(message.chat.id))
+        n_msg = bot.send_message(message.chat.id, 'Start auth')
+        bot.register_next_step_handler(n_msg, welcome_msg(message.chat.id))
 
 # @bot.message_handler(commands=['auth'])
 def welcome_msg(chat_id):
