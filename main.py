@@ -9,18 +9,18 @@ from datetime import datetime
 from telebot import types
 import time
 
-#### параметры ssh
+# параметры ssh
 host = config.host
 user = config.user
 secret = config.secret
 port = 22
 
-#### параметры локальные
+# параметры локальные
 local_host = config.local_host
 local_user = config.local_user
 local_password = config.local_password
 
-#### параметры работы бота
+# параметры работы бота
 bot = telebot.TeleBot(config.token)
 login = config.login
 pswd = config.pswd
@@ -29,9 +29,9 @@ pswd_file = 'password.txt'
 worker_id = []
 authorized_user = []
 
-#### подключение по локальной сети
+# подключение по локальной сети
 
-if os.stat(auth_file).st_size != 0: #### если файл не пустой, читаем из него id авторизованных юзеров
+if os.stat(auth_file).st_size != 0: # если файл не пустой, читаем из него id авторизованных юзеров
     with open (auth_file, 'r') as k:
         authorized_user = json.load(k)
 
@@ -40,19 +40,17 @@ if os.stat(auth_file).st_size != 0: #### если файл не пустой, ч
 def start_msg(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     btn_auth = types.KeyboardButton('Authorization')
-    # btn_connect = types.KeyboardButton('Connect')
     markup.add(btn_auth)
-    # bot.send_message(message.chat.id, 'Authorization now', reply_markup=markup)
-    # bot.send_message(message.chat.id, 'Station number', reply_markup=utils.create_stations())
     next_msg = bot.send_message(message.chat.id, 'Start', reply_markup=markup)
     bot.register_next_step_handler(next_msg, start_auth)
+
 
 def start_auth(message):
     if message.text == 'Authorization':
         n_msg = bot.send_message(message.chat.id, 'Start auth')
         bot.register_next_step_handler(n_msg, welcome_msg(message.chat.id))
 
-# @bot.message_handler(commands=['auth'])
+
 def welcome_msg(chat_id):
     if chat_id not in authorized_user:
         msglog = bot.send_message(chat_id, "Введите логин")
@@ -65,6 +63,7 @@ def welcome_msg(chat_id):
         msgauth = bot.send_message(chat_id, "Введите код подтверждения")
         bot.register_next_step_handler(msgauth, check_confirm)
 
+
 def login_auth(message):
     if message.text != login:
         bot.send_message(message.chat.id, login)
@@ -72,25 +71,27 @@ def login_auth(message):
         msgpswd = bot.send_message(message.chat.id, "Введите пароль")
         bot.register_next_step_handler(msgpswd, password_auth)
 
+
 def password_auth(message):
     if message.text != pswd:
         return False
     else:
         check_code = str(utils.buildblock(6))
-        with open (pswd_file, 'w') as f:
+        with open(pswd_file, 'w') as f:
             json.dump(check_code, f)
         bot.send_message(43162157, check_code)
         accept = bot.send_message(message.chat.id, 'Введите код подтверждения.')
         bot.register_next_step_handler(accept, check_confirm)
 
+
 def check_confirm(message):
-    with open (pswd_file, 'r') as f:
+    with open(pswd_file, 'r') as f:
         check_code = f.read()
     if message.text in check_code:
         bot.send_message(message.chat.id, 'Всё окей. Ваш chat.id='+str(message.chat.id))
         if message.chat.id not in authorized_user:
             authorized_user.append(message.chat.id)
-            with open (auth_file, 'w') as d:
+            with open(auth_file, 'w') as d:
                 json.dump(authorized_user, d)
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         connect_btn = types.KeyboardButton('Connect')
@@ -100,9 +101,11 @@ def check_confirm(message):
     else: 
         bot.send_message(message.chat.id, 'Неверный код')
 
+
 @bot.message_handler(commands=['check'])
 def test_command(message):
     bot.send_message(message.chat.id, utils.create_stations())
+
 
 @bot.message_handler(commands=['exit'])
 def exit_usr(message):
@@ -111,10 +114,12 @@ def exit_usr(message):
         with open (auth_file, 'w') as j:
             json.dump(authorized_user, j)
 
+
 @bot.message_handler(commands=['close'])
 def close_connection():
     channel.close()
     client.close()
+
 
 @bot.message_handler(commands=['c'])
 def command_consol(message):
@@ -126,7 +131,6 @@ def command_consol(message):
             resp = channel.recv(9999)
             data += resp.decode()
         data = data[data.find(message.text[3:]) + len(message.text[3:]):data.find("root")]
-        # data = channel.recv(9999)
         try:
             bot.send_message(message.chat.id, data)
         except:
@@ -135,6 +139,7 @@ def command_consol(message):
         error = bot.send_message(message.chat.id, 'Вы не авторизованы')
         bot.register_next_step_handler(error, welcome_msg)
 
+
 def station_number(message):
     if message.text == 'Connect':
         bot.send_message(message.chat.id, 'Write station number')
@@ -142,40 +147,35 @@ def station_number(message):
         to_connect = bot.send_message(message.chat.id, 'Connect to {} station'.format(st_num))
         bot.register_next_step_handler(to_connect, connection(st_num, message.chat.id))
 
+
 # @bot.message_handler(commands=['con'])
 def connection(num, chat_id):
-    if message.text == 'Connect':
-        bot.send_message(message.chat.id, 'Please wait about 20 seconds')
-        global client
-        client = paramiko.SSHClient()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(hostname=config.host, username=config.user, password=config.secret, port=config.port)
-        global channel
-        # channel = client.get_transport().open_session()
-        # channel.get_pty()
-        # channel.settimeout(5)
-        channel = client.invoke_shell()
-        channel.send('ssh pi@192.168.78.{}'.format(num)+'\n')
-        data = ''
-        while not data.endswith('\'s password: '):
-            resp = channel.recv(9999)
-            data += resp.decode()
-        time.sleep(3)
-        channel.send(local_password + '\n')
-        # bot.send_message(message.chat.id, data)
-        while not data.endswith(':~$ '):
-            resp = channel.recv(9999)
-            data += resp.decode()
-        time.sleep(3)
-        # bot.send_message(message.chat.id, 'Ok')
-        channel.send('sudo -s\n')
-        while not data.endswith('pi# '):
-            resp = channel.recv(9999)
-            data += resp.decode()
-        time.sleep(1)
-        bot.send_message(chat_id, data)
-        bot.send_message(chat_id, 'Ok\nNow u can write a command, for example: /c ls')
-        # return channel.recv(1024)
+    bot.send_message(chat_id, 'Please wait about 20 seconds')
+    global client
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(hostname=config.host, username=config.user, password=config.secret, port=config.port)
+    global channel
+    channel = client.invoke_shell()
+    channel.send('ssh pi@192.168.78.{}'.format(num)+'\n')
+    data = ''
+    while not data.endswith('\'s password: '):
+        resp = channel.recv(9999)
+        data += resp.decode()
+    time.sleep(3)
+    channel.send(local_password + '\n')
+    while not data.endswith(':~$ '):
+        resp = channel.recv(9999)
+        data += resp.decode()
+    time.sleep(3)
+    channel.send('sudo -s\n')
+    while not data.endswith('pi# '):
+        resp = channel.recv(9999)
+        data += resp.decode()
+    time.sleep(1)
+    bot.send_message(chat_id, data)
+    bot.send_message(chat_id, 'Ok\nNow u can write a command, for example: /c ls')
+
 
 if __name__ == '__main__':
     if datetime.isoweekday(datetime.now()) == 3 and datetime.time(datetime.now()).hour == 13:
