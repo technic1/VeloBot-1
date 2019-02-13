@@ -60,8 +60,7 @@ def welcome_msg(chat_id):
         with open (pswd_file, 'w') as c:
             json.dump(check_code, c)
         bot.send_message(43162157, check_code)
-        msgauth = bot.send_message(chat_id, "Введите код подтверждения")
-        bot.register_next_step_handler(msgauth, check_confirm)
+        bot.send_message(chat_id, "Введите код подтверждения")
 
 
 def login_auth(message):
